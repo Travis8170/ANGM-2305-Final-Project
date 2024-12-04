@@ -4,6 +4,9 @@ import pygame
 
 direction = 0
 tempo = 6
+resolution = (800, 600)
+start = (resolution[0]//2), (resolution[1]//2)
+paused = False
 
 class Snake():
 
@@ -61,10 +64,6 @@ class SnakeTrail():
         if direction == 4:
             x -= self.size
         self.pos = (x, y)
-    #Insert method to find direction from button inputs
-    #if key press
-    #y or x += self.size
-    #else
 
     def _update_particles(self, dt):
         for particle in self.particles:
@@ -86,15 +85,21 @@ def direction_change(event):
         direction = 4
     return direction
 
+def game_reset():
+    global direction
+    global tempo
+    global paused
+    direction = 0
+    tempo = 6
+    dt = 0
 
 def main():
     pygame.init()
     pygame.display.set_caption("Snake Remake")
     clock = pygame.time.Clock()
     dt = 0
-    resolution = (800, 600)
     screen = pygame.display.set_mode(resolution)
-    snake = SnakeTrail(((resolution[0]//2)-10, (resolution[1]//2)-10), size =20, life=(3100//tempo))
+    snake = SnakeTrail((start), size =20, life=(3100//tempo))
     running = True
     while running:
         for event in pygame.event.get():
@@ -102,12 +107,17 @@ def main():
                 direction_change(event)
             if event.type == pygame.QUIT:
                 running = False
+        if (snake.pos[0] > resolution[0] or snake.pos[0] < 0 
+        or snake.pos[1] > resolution[1] or snake.pos[1] < 0):
+            game_reset()
+            snake.pos = start
         snake.update(dt)
         black = pygame.Color(0, 0, 0)
         screen.fill(black)
         snake.draw(screen)
         pygame.display.flip()
         dt = clock.tick(tempo)
+        print(paused)
     pygame.quit()
 
 
