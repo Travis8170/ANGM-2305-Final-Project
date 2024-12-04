@@ -25,7 +25,7 @@ class Snake():
             self.dead = True
         
     def update_surface(self):
-        surf = pygame.Surface((self.size, self.size))
+        surf = pygame.Surface((self.size*0.95, self.size*0.95))
         surf.fill(self.color)
         return surf
     
@@ -63,8 +63,15 @@ class SnakeTrail():
         self.pos = (x, y)
 
     def _update_particles(self, dt):
-        for particle in self.particles:
+        for idx, particle in enumerate(self.particles):
             particle.update(dt)
+            #if particle.dead:
+                #del self.particles[idx]
+
+    def _grow_size(self):
+        self.life += 1000//tempo
+        for particle in self.particles:
+            particle.life += 1000//tempo
 
     def draw(self, surface):
         for particle in self.particles:
@@ -80,7 +87,6 @@ def direction_change(event):
         direction = 3
     elif event.key == pygame.K_LEFT and direction != 3:
         direction = 4
-    return direction
 
 def game_reset():
     global direction
@@ -109,11 +115,15 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 direction_change(event)
+                if event.key == pygame.K_SPACE:
+                    snake._grow_size()
+                    print("size grew")
             if event.type == pygame.QUIT:
                 running = False
         if (snake.pos[0] > resolution[0] or snake.pos[0] < 0 
         or snake.pos[1] > resolution[1] or snake.pos[1] < 0):
             snake.pos = start
+            snake.life = 3100//tempo
             game_reset()
         snake.update(dt)
         black = pygame.Color(0, 0, 0)
