@@ -17,14 +17,12 @@ class Snake():
         self.age = 0
         self.life = life
         self.dead = False
-        #self.alpha = 255
         self.surface = self.update_surface()
 
     def update(self, dt):
         self.age += dt
         if self.age > self.life:
             self.dead = True
-        #self.alpha = 255 * (1 -(self.age / self.life))
         
     def update_surface(self):
         surf = pygame.Surface((self.size, self.size))
@@ -34,7 +32,6 @@ class Snake():
     def draw(self, surface):
         if self.dead:
             return
-        #self.surface.set_alpha(self.alpha)
         surface.blit(self.surface, self.pos)
         
 
@@ -91,7 +88,14 @@ def game_reset():
     global paused
     direction = 0
     tempo = 6
-    dt = 0
+    paused = True
+    reset_time = pygame.time.get_ticks()
+    while paused == True:
+        paused_time = pygame.time.get_ticks()
+        if paused_time - reset_time >= 1000:
+            paused_time = reset_time
+            paused = False
+
 
 def main():
     pygame.init()
@@ -109,15 +113,14 @@ def main():
                 running = False
         if (snake.pos[0] > resolution[0] or snake.pos[0] < 0 
         or snake.pos[1] > resolution[1] or snake.pos[1] < 0):
-            game_reset()
             snake.pos = start
+            game_reset()
         snake.update(dt)
         black = pygame.Color(0, 0, 0)
         screen.fill(black)
         snake.draw(screen)
         pygame.display.flip()
         dt = clock.tick(tempo)
-        print(paused)
     pygame.quit()
 
 
