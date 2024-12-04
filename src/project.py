@@ -76,13 +76,13 @@ class SnakeTrail():
     
 def direction_change(event):
     global direction
-    if event.key == pygame.K_DOWN:
+    if event.key == pygame.K_DOWN and direction != 2:
         direction = 1
-    elif event.key == pygame.K_UP:
+    elif event.key == pygame.K_UP and direction != 1:
         direction = 2
-    elif event.key == pygame.K_RIGHT:
+    elif event.key == pygame.K_RIGHT and direction != 4:
         direction = 3
-    elif event.key == pygame.K_LEFT:
+    elif event.key == pygame.K_LEFT and direction != 3:
         direction = 4
     return direction
 
