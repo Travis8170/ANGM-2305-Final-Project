@@ -54,6 +54,12 @@ class SnakeTrail():
         x, y = self.pos
         if direction == 1:
             y += self.size
+        if direction == 2:
+            y -= self.size
+        if direction == 3:
+            x += self.size
+        if direction == 4:
+            x -= self.size
         self.pos = (x, y)
     #Insert method to find direction from button inputs
     #if key press
