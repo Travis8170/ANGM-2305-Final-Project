@@ -65,8 +65,8 @@ class SnakeTrail():
     def _update_particles(self, dt):
         for idx, particle in enumerate(self.particles):
             particle.update(dt)
-            #if particle.dead:
-                #del self.particles[idx]
+            if particle.dead:
+                del self.particles[idx]
 
     def _grow_size(self):
         self.life += 1000//tempo
