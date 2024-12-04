@@ -7,6 +7,6 @@ Final Project. Recreation of retro game Snake
 Demo Video: <URL>
 
 ## GitHub Repository
-GitHub Repo: <URL>
+GitHub Repo: https://github.com/Travis8170/ANGM-2305-Final-Project.git
 
 ## Description
