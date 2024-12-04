@@ -3,16 +3,21 @@ import pygame
 
 class Snake():
 
-    def __init__(self, pos=(0, 0), size=15):
+    def __init__(self, pos=(0, 0), size=15, life=1000):
         self.pos = pos
         self.size = size
         self.color = pygame.Color(0, 255, 0)
         self.age = 0
-        self.alpha = 255
+        self.life = life
+        self.dead = False
+        #self.alpha = 255
         self.surface = self.update_surface()
 
     def update(self, dt):
         self.age += dt
+        if self.age > self.life:
+            self.dead = True
+        #self.alpha = 255 * (1 -(self.age / self.life))
         
     def update_surface(self):
         surf = pygame.Surface((self.size, self.size))
@@ -20,9 +25,32 @@ class Snake():
         return surf
     
     def draw(self, surface):
+        if self.dead:
+            return
+        self.surface.set_alpha(self.alpha)
         surface.blit(self.surface, self.pos)
         
 
+class SnakeTrail():
+
+    def __init__(self, pos, size, life):
+        self.pos = pos
+        self.size = size
+        self.life = life
+        self.particles = []
+
+    def update(self, dt):
+        particle = Snake(self.pos, size=self.size, life=self.life)
+        self.particles.insert(0, particle)
+        self._update_pos()
+
+    def _update_pos(self):
+        x, y = self.pos
+        y += self.size
+        self.pos = (x, y)
+
+    #Insert method to find direction from button inputs
+    
 
 def main():
     pygame.init()
@@ -31,7 +59,7 @@ def main():
     dt = 0
     resolution = (800, 600)
     screen = pygame.display.set_mode(resolution)
-    snake = Snake()
+    snake = Snake(life=1000)
     running = True
     while running:
         for event in pygame.event.get():
