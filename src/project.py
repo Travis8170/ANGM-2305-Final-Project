@@ -1,6 +1,10 @@
 import random
 import pygame
 
+
+direction = 0
+tempo = 6
+
 class Snake():
 
     def __init__(self, pos=(0, 0), size=15, life=1000):
@@ -46,10 +50,15 @@ class SnakeTrail():
         self._update_pos()
 
     def _update_pos(self):
+        global direction
         x, y = self.pos
-        y += self.size
+        if direction == 1:
+            y += self.size
         self.pos = (x, y)
     #Insert method to find direction from button inputs
+    #if key press
+    #y or x += self.size
+    #else
 
     def _update_particles(self, dt):
         for particle in self.particles:
@@ -59,6 +68,18 @@ class SnakeTrail():
         for particle in self.particles:
             particle.draw(surface)
     
+def direction_change(event):
+    global direction
+    if event.key == pygame.K_DOWN:
+        direction = 1
+    elif event.key == pygame.K_UP:
+        direction = 2
+    elif event.key == pygame.K_RIGHT:
+        direction = 3
+    elif event.key == pygame.K_LEFT:
+        direction = 4
+    return direction
+
 
 def main():
     pygame.init()
@@ -67,10 +88,12 @@ def main():
     dt = 0
     resolution = (800, 600)
     screen = pygame.display.set_mode(resolution)
-    snake = SnakeTrail((0, 0), size =20, life=3100)
+    snake = SnakeTrail(((resolution[0]//2)-10, (resolution[1]//2)-10), size =20, life=(3100//tempo))
     running = True
     while running:
         for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                direction_change(event)
             if event.type == pygame.QUIT:
                 running = False
         snake.update(dt)
@@ -78,7 +101,7 @@ def main():
         screen.fill(black)
         snake.draw(screen)
         pygame.display.flip()
-        dt = clock.tick(1)
+        dt = clock.tick(tempo)
     pygame.quit()
 
 
