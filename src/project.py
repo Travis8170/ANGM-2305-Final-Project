@@ -79,6 +79,31 @@ class SnakeTrail():
     def draw(self, surface):
         for particle in self.particles:
             particle.draw(surface)
+
+
+class Apple():
+
+    def __init__(self, pos, size):
+        self.pos = pos
+        self.size = size
+        self.color = pygame.Color(255, 0, 0)
+        self.dead = False
+        self.surface = self.update_surface()
+
+    def update(self, dt):
+        if self.dead == True:
+            self.dead == False
+
+    def update_surface(self):
+        surf = pygame.Surface((self.size*0.95, self.size*0.95))
+        surf.fill(self.color)
+        return surf
+    
+    def draw(self, surface):
+        if self.dead:
+            return
+        surface.blit(self.surface, self.pos)
+
     
 def direction_change(event):
     global direction
@@ -125,6 +150,8 @@ def main():
     dt = 0
     screen = pygame.display.set_mode(resolution)
     snake = SnakeTrail(start, size =20, life=(3100//tempo))
+    apple = Apple((random.randrange(0, resolution[0], 20),
+    random.randrange(0, resolution[1], 20)), size =20)
     running = True
     global in_motion
     while running:
@@ -136,6 +163,9 @@ def main():
                     snake._grow_size()
             if event.type == pygame.QUIT:
                 running = False
+        if snake.pos == apple.pos:
+            snake._grow_size()
+            apple.dead = True
         if (snake.pos[0] > resolution[0] or snake.pos[0] < 0 
         or snake.pos[1] > resolution[1] or snake.pos[1] < 0):
             game_reset()
@@ -144,6 +174,7 @@ def main():
         snake.update(dt)
         black = pygame.Color(0, 0, 0)
         screen.fill(black)
+        apple.draw(screen)
         snake.draw(screen)
         pygame.display.flip()
         dt = clock.tick(tempo)
