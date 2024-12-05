@@ -7,6 +7,7 @@ tempo = 6
 resolution = (800, 600)
 start = (resolution[0]//2), (resolution[1]//2)
 paused = False
+is_moving = False
 
 class Snake():
 
@@ -48,6 +49,7 @@ class SnakeTrail():
         self.particles.insert(0, particle)
         self._update_particles(dt)
         self._update_pos()
+        self._collision()
 
     def _update_pos(self):
         global direction
@@ -69,6 +71,12 @@ class SnakeTrail():
                 del self.particles[idx]
             if particle.dead:
                 del self.particles[idx]
+
+    def _collision(self):
+        for particle in self.particles[1:]:
+            if self.pos == particle.pos:
+                return True
+        return False
 
     def _grow_size(self):
         self.life += 1000//tempo
@@ -142,8 +150,10 @@ def game_reset():
     global direction
     global tempo
     global paused
+    global is_moving
     direction = 0
     tempo = 6
+    is_moving = False
     paused = True
     reset_time = pygame.time.get_ticks()
     while paused == True:
@@ -162,6 +172,7 @@ def main():
     pygame.display.set_caption("Snake Remake")
     clock = pygame.time.Clock()
     dt = 0
+    global is_moving
     screen = pygame.display.set_mode(resolution)
     snake = SnakeTrail(start, size =20, life=(3100//tempo))
     apple = Apple((random.randrange(0, resolution[0], 20),
@@ -169,6 +180,8 @@ def main():
     running = True
     global in_motion
     while running:
+        if direction > 0:
+            is_moving = True
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 direction_change(event)
@@ -180,7 +193,7 @@ def main():
             apple = create_apple()
             apple.draw(screen)
         if (snake.pos[0] > resolution[0] or snake.pos[0] < 0 
-        or snake.pos[1] > resolution[1] or snake.pos[1] < 0):
+        or snake.pos[1] > resolution[1] or snake.pos[1] < 0 or (snake._collision() and is_moving == True)):
             game_reset()
             snake.pos = start
             snake.life = 3100//tempo
