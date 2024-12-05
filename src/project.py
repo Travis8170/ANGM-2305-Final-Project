@@ -7,6 +7,7 @@ tempo = 6
 resolution = (800, 600)
 start = (resolution[0]//2), (resolution[1]//2)
 paused = False
+in_motion = False
 
 class Snake():
 
@@ -65,6 +66,8 @@ class SnakeTrail():
     def _update_particles(self, dt):
         for idx, particle in enumerate(self.particles):
             particle.update(dt)
+            if paused == True:
+                del self.particles[idx]
             if particle.dead:
                 del self.particles[idx]
 
@@ -102,6 +105,18 @@ def game_reset():
             paused_time = reset_time
             paused = False
 
+def is_moving():
+    global in_motion
+    if direction > 0:
+        in_motion = True
+        return in_motion
+    else:
+        in_motion = False
+        return in_motion
+
+def has_collided():
+    pass
+
 
 def main():
     pygame.init()
@@ -109,22 +124,23 @@ def main():
     clock = pygame.time.Clock()
     dt = 0
     screen = pygame.display.set_mode(resolution)
-    snake = SnakeTrail((start), size =20, life=(3100//tempo))
+    snake = SnakeTrail(start, size =20, life=(3100//tempo))
     running = True
+    global in_motion
     while running:
+        is_moving()
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 direction_change(event)
                 if event.key == pygame.K_SPACE:
                     snake._grow_size()
-                    print("size grew")
             if event.type == pygame.QUIT:
                 running = False
         if (snake.pos[0] > resolution[0] or snake.pos[0] < 0 
         or snake.pos[1] > resolution[1] or snake.pos[1] < 0):
+            game_reset()
             snake.pos = start
             snake.life = 3100//tempo
-            game_reset()
         snake.update(dt)
         black = pygame.Color(0, 0, 0)
         screen.fill(black)
