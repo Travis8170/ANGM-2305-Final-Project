@@ -3,11 +3,12 @@ import pygame
 
 
 direction = 0
-tempo = 6
+tempo = 60
 resolution = (800, 600)
 start = (resolution[0]//2), (resolution[1]//2)
 paused = False
 is_moving = False
+score = 0
 
 class Snake():
 
@@ -151,6 +152,8 @@ def game_reset():
     global tempo
     global paused
     global is_moving
+    global score
+    score = 0
     direction = 0
     tempo = 6
     is_moving = False
@@ -162,6 +165,16 @@ def game_reset():
             paused_time = reset_time
             paused = False
 
+
+def diff_adjust():
+    global tempo
+    if score == 3:
+        tempo = 9
+    if score == 6:
+        tempo = 13
+    if score == 10:
+        tempo = 18
+
 def create_apple():
     apple = Apple((random.randrange(0, resolution[0], 20),
     random.randrange(0, resolution[1], 20)), size =20)
@@ -172,6 +185,8 @@ def main():
     pygame.display.set_caption("Snake Remake")
     clock = pygame.time.Clock()
     dt = 0
+    global score
+    global tempo
     global is_moving
     screen = pygame.display.set_mode(resolution)
     snake = SnakeTrail(start, size =20, life=(3100//tempo))
@@ -192,6 +207,8 @@ def main():
             apple.dead = True
             apple = create_apple()
             apple.draw(screen)
+            score += 1
+            diff_adjust()
         if (snake.pos[0] > resolution[0] or snake.pos[0] < 0 
         or snake.pos[1] > resolution[1] or snake.pos[1] < 0 or (snake._collision() and is_moving == True)):
             game_reset()
