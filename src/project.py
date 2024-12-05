@@ -7,7 +7,6 @@ tempo = 6
 resolution = (800, 600)
 start = (resolution[0]//2), (resolution[1]//2)
 paused = False
-in_motion = False
 
 class Snake():
 
@@ -89,15 +88,38 @@ class Apple():
         self.color = pygame.Color(255, 0, 0)
         self.dead = False
         self.surface = self.update_surface()
+        self.birth_rate = 1
+        self.insts = []
 
-    def update(self, dt):
+    def update(self):
+        if self.dead == False:
+            pass
         if self.dead == True:
+            self._birth_new()
+            self._update_inst()
+            self.draw(self.surface)
+            print("apple is dead")
             self.dead == False
+            print("apple is alive")
 
     def update_surface(self):
         surf = pygame.Surface((self.size*0.95, self.size*0.95))
         surf.fill(self.color)
         return surf
+
+    def _update_inst(self):
+        for inst in self.insts:
+            inst.update()
+
+    def _birth_new(self):
+        for count in range(self.birth_rate):
+            screen_width = resolution[0]
+            screen_height = resolution[1]
+            x = random.randrange(0, screen_width, self.size)
+            y = random.randrange(0, screen_height, self.size)
+            pos = (x, y)
+            inst = Apple(pos, self.size)
+            self.insts.insert(0, inst)
     
     def draw(self, surface):
         if self.dead:
@@ -130,18 +152,10 @@ def game_reset():
             paused_time = reset_time
             paused = False
 
-def is_moving():
-    global in_motion
-    if direction > 0:
-        in_motion = True
-        return in_motion
-    else:
-        in_motion = False
-        return in_motion
-
-def has_collided():
-    pass
-
+def create_apple():
+    apple = Apple((random.randrange(0, resolution[0], 20),
+    random.randrange(0, resolution[1], 20)), size =20)
+    return apple
 
 def main():
     pygame.init()
@@ -155,22 +169,22 @@ def main():
     running = True
     global in_motion
     while running:
-        is_moving()
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 direction_change(event)
-                if event.key == pygame.K_SPACE:
-                    snake._grow_size()
             if event.type == pygame.QUIT:
                 running = False
         if snake.pos == apple.pos:
             snake._grow_size()
             apple.dead = True
+            apple = create_apple()
+            apple.draw(screen)
         if (snake.pos[0] > resolution[0] or snake.pos[0] < 0 
         or snake.pos[1] > resolution[1] or snake.pos[1] < 0):
             game_reset()
             snake.pos = start
             snake.life = 3100//tempo
+        apple.update()
         snake.update(dt)
         black = pygame.Color(0, 0, 0)
         screen.fill(black)
