@@ -3,7 +3,7 @@ import pygame
 
 
 direction = 0
-tempo = 60
+tempo = 6
 resolution = (800, 600)
 start = (resolution[0]//2), (resolution[1]//2)
 paused = False
